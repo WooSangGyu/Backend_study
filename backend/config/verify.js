@@ -11,9 +11,17 @@ const verify = ((token, secret) => {
             return false
         }
     }
-    catch(e) {
-        console.log(e)
-        return false;
+    catch(err) {
+        if (err.name == 'TokenExpiredError') {
+            return resizeBy.status(419).json({
+                resultCode: 419,
+                message: "토큰 만료"
+            });
+        };
+        return res.status(401).json({
+            resultCode : 401,
+            message: "토큰이 유효하지 않습니다."
+        })
     }
 });
 

@@ -5,13 +5,7 @@ const models = require('../models');
 let jwt = require('jsonwebtoken');
 let secretObj = require('../config/jwt');
 
-router.use(cookieParser());
-
-/* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('user', { title: 'Express' });
-});
-
+router.use(cookieParser('asd123'));
 
 router.get('/signup', function(req, res, next){
     let body = req.body;
@@ -51,18 +45,23 @@ router.post('/signin', function(req, res, next) {
         {
             expiresIn: '1h'
         })
-        res.cookie('token', jwttoken);
-        res.cookie('userid', userprofile.dataValues.id);
-        res.redirect('/signed')
+        var id = userprofile.dataValues.id;
+        console.log(id);
+
+        res.cookie('token', jwttoken, { signed:true });
+        console.log("토큰 저장 완료");
+        res.cookie('userid', id, { signed:true });
+        console.log("아이디 저장완료");
+        res.redirect('/login')
     })
     .catch(err => {
         console.log("로그인에 실패했습니다.");
     });
 });
 
-router.get('/signed', function(req, res, next) {
-    let token = req.cookies.token;
-    let id = req.cookies.userid;
+router.get('/login', function(req, res, next) {
+    let token = req.signedCookies.token;
+    let id = req.signedCookies.userid;
     
     console.log(token);
     console.log(id);
