@@ -1,7 +1,7 @@
 'use strict';
 
 module.exports = (sequelize, DataType) => {
-    var board = sequelize.define('board', {
+    var post = sequelize.define('post', {
         no : {
             type : DataType.INTEGER,
             primaryKey: true,
@@ -22,5 +22,5 @@ module.exports = (sequelize, DataType) => {
     {
         timestamp: true
     });
-    return board;
+    return post;
 };

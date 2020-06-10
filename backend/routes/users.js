@@ -46,21 +46,21 @@ router.post('/signin', function(req, res, next) {
             expiresIn: '1h'
         })
         var id = userprofile.dataValues.id;
-        console.log(id);
+        console.log(jwttoken);
 
-        res.cookie('token', jwttoken, { signed:true });
-        console.log("토큰 저장 완료");
         res.cookie('userid', id, { signed:true });
         console.log("아이디 저장완료");
-        res.redirect('/login')
+        res.json({ success : jwttoken });
+        // res.redirect('/login')
     })
     .catch(err => {
+        console.log(err);
         console.log("로그인에 실패했습니다.");
     });
 });
 
 router.get('/login', function(req, res, next) {
-    let token = req.signedCookies.token;
+    let token = req.headers.token;
     let id = req.signedCookies.userid;
     
     console.log(token);
