@@ -1,8 +1,11 @@
 var express = require('express');
 var router = express.Router();
+var cookieParser = require('cookie-parser');
 const models = require('../models');
 let jwt = require('jsonwebtoken');
 let secretObj = require('../config/jwt');
+
+router.use(cookieParser());
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
@@ -29,7 +32,12 @@ router.get('/signup', function(req, res, next){
     });
 });
 
-router.get('/signin', function(req, res, next) {
+
+router.get('/signin', function(req, res) {
+    res.render('login');
+});
+
+router.post('/signin', function(req, res, next) {
     let body = req.body;
 
     models.user.findOne({ where : {
@@ -43,14 +51,30 @@ router.get('/signin', function(req, res, next) {
         {
             expiresIn: '1h'
         })
-        res.json({
-            token : jwttoken}
-            );
+        res.cookie('token', jwttoken);
+        res.cookie('userid', userprofile.dataValues.id);
+        res.redirect('/signed')
     })
     .catch(err => {
         console.log("로그인에 실패했습니다.");
     });
 });
+
+router.get('/signed', function(req, res, next) {
+    let token = req.cookies.token;
+    let id = req.cookies.userid;
+    
+    console.log(token);
+    console.log(id);
+
+    let decoded = jwt.verify(token, secretObj.secret);
+    console.log(decoded);
+    if(decoded){
+      res.send("권한이 있습니다.")
+    } else {
+      res.send("권한이 없습니다.")
+    }
+  })
 
 
 

@@ -5,7 +5,22 @@ let jwt = require('jsonwebtoken');
 let secretObj = require('../config/jwt');
 let verify = require('../config/verify');
 
-router.get('/allview', function(req, res, next) {
+router.get('/userview', function(req, res, next) {
+
+    let usertoken = req.headers.token;
+
+    if(verify(usertoken, secretObj.secret)) {
+        models.user.findAll()
+        .then( result => {
+            res.json({ user : result });
+        });
+    }
+    else {
+        res.json({ fail });
+    }
+});
+
+router.get('/boardview', function(req, res, next) {
 
     let usertoken = req.headers.token;
 
