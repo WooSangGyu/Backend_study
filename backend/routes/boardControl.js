@@ -29,10 +29,21 @@ router.get('/boardview', function(req, res, next) {
 
     let usertoken = req.headers.token;
 
+    let page = req.body.page; // 게시물 페이지 받기
+    pageNum = parseInt(page); // Int형으로 변환
+    let offset = 0; //오프셋 초기화
 
+    if(pageNum > 1) {
+        offset = 10*(pageNum -1); // 건너뛰는 갯수 설정
+    }
 
     if(verify(usertoken, secretObj.secret)) {
-        models.post.findAll()
+        models.post.findAll(
+            {
+                offset : offset,
+                limit: 10 //표시할 갯수
+            }
+        )
         .then( result => {
             res.json({ posts : result });
         });
