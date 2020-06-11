@@ -1,10 +1,12 @@
 var express = require('express');
 var router = express.Router();
 var cookieParser = require('cookie-parser');
-const models = require('../models');
-let jwt = require('jsonwebtoken');
-let secretObj = require('../config/jwt');
-let verify = require('../config/verify');
+var models = require('../models');
+var jwt = require('jsonwebtoken');
+var secretObj = require('../config/jwt');
+var verify = require('../config/verify');
+var sequelize = require('sequelize');
+var Op = sequelize.Op;
 
 router.use(cookieParser('asd123'));
 
@@ -62,13 +64,9 @@ router.post('/addpost', function(req, res, next) {
 });
 
 router.delete('/delpost', function(req, res, next) {
-
-    
     
     let usertoken = req.headers.token;
-    // console.log(usertoken);
     let id = req.signedCookies.userid;
-    // console.log(id);
     
     
     let body = req.body;
@@ -104,10 +102,9 @@ router.delete('/delpost', function(req, res, next) {
 })
 
 router.put('/uppost', function(req, res, next) {
+
     let usertoken = req.headers.token;
-    console.log(usertoken);
     let id = req.signedCookies.userid;
-    console.log(id);
 
     let body = req.body;
 
@@ -170,5 +167,87 @@ router.post('/addreply', function(req, res, next) {
         res.json({fail});
     }
 });
+
+router.delete('/delreply', function(req, res, next) {
+    
+    let usertoken = req.headers.token;
+    let id = req.signedCookies.userid;
+    
+    
+    let body = req.body;
+
+    if(verify(usertoken, secretObj.secret)) {
+
+        models.reply.findOne({
+            where: { no : body.no}
+        })
+        .then( findreply => {
+            // console.log("찾은 정보 :", findpost.dataValues.writer);
+            if (findreply.dataValues.writer === id){
+                models.findreply.destroy({
+                    where : {no : findreply.dataValues.no}
+                })
+                .then ( del => {
+                    res.json({ success : del });
+                })
+                .catch ( err => {
+                    console.log(err);
+                })
+            }
+            else (console.log("권한이 없습니다."));
+        })
+        .catch( err => {
+            console.log(err);
+            console.log("댓글 정보를 찾지 못했습니다.")
+        })
+    }
+    else {
+        res.json({fail})
+    }
+})
+
+router.put('/upreply', function(req, res, next) {
+
+    let usertoken = req.headers.token;
+    let id = req.signedCookies.userid;
+
+    let body = req.body;
+
+    console.log(body);
+
+    if(verify(usertoken, secretObj.secret)) {
+        models.reply.findOne({
+            where: { no : body.no}
+        })
+        .then( findreply => {
+            // console.log("찾은 정보 :", findreply);
+            if (findreply.dataValues.writer === id){
+                models.findreply.update({
+                    reply : body.reply
+                    },
+                    {
+                        where : {no : findreply.dataValues.no}
+                })
+                .then ( updat => {
+                    console.log("수정 완료했습니다")
+                    res.json({ success : updat });
+                })
+                .catch ( err => {
+                    console.log(err);
+                    console.log("수정에 실패했습니다")
+                })
+            }
+            else (console.log("권한이 없습니다."));
+        })
+        .catch( err => {
+            console.log(err);
+            console.log("댓글 정보를 찾지 못했습니다.")
+        })
+    }
+    else {
+        res.json({fail})
+    }
+})
+
 
 module.exports = router;
