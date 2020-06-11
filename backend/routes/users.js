@@ -80,10 +80,59 @@ router.get('/searchview', function(req, res, next) {
         })
     }
     else {
-        res.json({fail})
+        console.log("토큰이 없거나 만료되었습니다.");
     }
 })
 
+router.get('/checkpost', function(req, res, next) {
+    
+    let usertoken = req.headers.token;
+    let id = req.signedCookies.userid;
+
+    if(verify(usertoken, secretObj.secret)) {
+        models.post.findAll({
+            where : {
+                writer : id
+            }
+        })
+        .then( findpost => {
+            res.json({ success : findpost});
+        })
+        .catch( err => {
+            console.log(err);
+        })
+    }
+    else {
+        console.log("토큰이 없거나 만료되었습니다.");
+    }
+})
+
+router.put('/pwup', function(req, res, next) {
+    let usertoken = req.headers.token;
+    let id = req.signedCookies.userid;
+
+    let body = req.body;
+
+    if(verify(usertoken, secretObj.secret)) {
+        models.user.update({
+            password : body.pwd
+        },
+        {
+            where : { id : id }
+        })
+        .then( pwup => {
+            console.log("비밀번호 변경 완료");
+            res.json({ success : pwup });
+        })
+        .catch( err => {
+            console.log("비밀번호 변경 실패");
+            console.log(err);
+        })
+    }
+    else {
+        console.log("토큰이 없거나 만료되었습니다.");
+    }
+})
 
 
 module.exports = router;

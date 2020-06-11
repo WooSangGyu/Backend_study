@@ -29,6 +29,8 @@ router.get('/boardview', function(req, res, next) {
 
     let usertoken = req.headers.token;
 
+
+
     if(verify(usertoken, secretObj.secret)) {
         models.post.findAll()
         .then( result => {
