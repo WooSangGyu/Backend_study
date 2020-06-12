@@ -22,7 +22,7 @@ module.exports = (sequelize, DataType) => {
         }
     },
     {
-        timestamp: true
+        timestamps: false
     });
     return user;
 };

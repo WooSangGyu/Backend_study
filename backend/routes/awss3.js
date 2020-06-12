@@ -30,17 +30,17 @@ router.post('/upload', upload.single("imgFile"), function(req, res, next) {
     res.json(imgFile);
 })
 
-router.get('/down', function(req, res, next) {
-    res.setHeader("content-type", "some/type");
-    var s3 = new AWS.S3();
-    var params = {Bucket : 'back-end-study',
-            Key : function (req, file, cb) {
-                let extension = path.extname(file.originalname);
-                cb(null, Date.now().toString()+extension)
-            },
-            acl:'public-read-write'
-        };
-    var stream = s3.getObject(params).createReadStream(Key);
-    stream.pipe(res);
-})
+// router.get('/down', function(req, res, next) {
+//     res.setHeader("content-type", "some/type");
+//     var s3 = new AWS.S3();
+//     var params = {Bucket : 'back-end-study',
+//             Key : function (req, file, cb) {
+//                 let extension = path.extname(file.originalname);
+//                 cb(null, Date.now().toString()+extension)
+//             },
+//             acl:'public-read-write'
+//         };
+//     var stream = s3.getObject(params).createReadStream(Key);
+//     stream.pipe(res);
+// })
 module.exports = router;

@@ -1,27 +1,32 @@
 'use strict';
 
 module.exports = (sequelize, DataType) => {
-    var reply = sequelize.define('reply', {
-        replyno : {
-            type : DataType.INTEGER,
-            primaryKey:true,
-            autoIncrement: true
+    var user = sequelize.define('user', {
+        id : {
+            type: DataType.STRING,
+            unique : true,
+            primaryKey : true,
+            allowNull: false
         },
-        postno : {
-            type : DataType.INTEGER,
-            allowNull : false
+        password : {
+            type: DataType.STRING,
+            allowNull : true
         },
-        writer : {
+        name : {
             type : DataType.STRING,
-            allowNull : false
+            allowNull:false
         },
-        reply : {
+        gender : {
             type : DataType.STRING,
-            allowNull:true
+            allowNull:false
+        },
+        createTime : {
+            type : DataType.DATE,
+            allowNull:false
         }
     },
     {
-        timestamp: true
+        timestamps: false
     });
-    return reply;
+    return user;
 };

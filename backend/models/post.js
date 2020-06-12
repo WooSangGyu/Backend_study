@@ -17,10 +17,14 @@ module.exports = (sequelize, DataType) => {
         content : {
             type: DataType.STRING,
             allowNull : false
+        },
+        createTime : {
+            type : DataType.DATE,
+            allowNull:false
         }
     },
     {
-        timestamp: true
+        timestamps: false
     });
     return post;
 };

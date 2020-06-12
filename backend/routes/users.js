@@ -5,6 +5,7 @@ const models = require('../models');
 var jwt = require('jsonwebtoken');
 var verify = require('../config/verify');
 var secretObj = require('../config/jwt');
+var resCode = require('../resCode/codes');
 
 
 router.use(cookieParser('asd123'));
@@ -16,15 +17,16 @@ router.get('/signup', function(req, res, next){
         id : body.id,
         password : body.password,
         name : body.name,
-        gender : body.gender
+        gender : body.gender,
+        createTime : new Date()
     })
     .then( profile => {
         console.log("회원가입 성공");
-        res.json({ success : profile })
+        res.json({ resultCode : resCode.Success , message: resCode.SuccessMessage })
     })
     .catch( err => {
         console.log("회원가입 실패");
-        console.log(err);
+        res.json({ resultCode : resCode.Failed , message: resCode.FailedMessage })
     });
 });
 
@@ -45,18 +47,20 @@ router.post('/signin', function(req, res, next) {
             id : userprofile.dataValues.id
         }, secretObj.secret ,
         {
-            expiresIn: '1h'
+            expiresIn: '10s'
         })
         var id = userprofile.dataValues.id;
         console.log(jwttoken);
 
         res.cookie('userid', id, { signed:true });
         console.log("아이디 저장완료");
-        res.json({ success : jwttoken });
+        res.json({ resultCode : resCode.Success,
+                   message: resCode.SuccessMessage });
     })
     .catch(err => {
         console.log(err);
-        console.log("로그인에 실패했습니다.");
+        res.json({ resultCode : resCode.Failed,
+                   message: resCode.ReadError });
     });
 });
 
@@ -73,14 +77,19 @@ router.get('/searchview', function(req, res, next) {
         })
         .then(result => {
             console.log(result);
-            res.json({ success : result });
+            res.json({ resultCode : resCode.Success,
+                       message: resCode.SuccessMessage });
         })
         .catch(err => {
             console.log(err);
+            res.json({ resultCode : resCode.Failed,
+                       message: resCode.ReadError });
         })
     }
     else {
         console.log("토큰이 없거나 만료되었습니다.");
+        res.json({ resultCode : resCode.VerifyFailedCode,
+                   message: resCode.VerifyFailError });
     }
 })
 
@@ -96,14 +105,18 @@ router.get('/checkpost', function(req, res, next) {
             }
         })
         .then( findpost => {
-            res.json({ success : findpost});
+            res.json({ resultCode : resCode.Success,
+                       message: resCode.SuccessMessage });
         })
         .catch( err => {
-            console.log(err);
+            res.json({ resultCode : resCode.Failed,
+                       message: resCode.ReadError });
         })
     }
     else {
         console.log("토큰이 없거나 만료되었습니다.");
+        res.json({ resultCode : resCode.VerifyFailedCode,
+                   message: resCode.VerifyFailError });
     }
 })
 
@@ -122,15 +135,20 @@ router.put('/pwup', function(req, res, next) {
         })
         .then( pwup => {
             console.log("비밀번호 변경 완료");
-            res.json({ success : pwup });
+            res.json({ resultCode : resCode.Success,
+                       message: resCode.SuccessMessage });
         })
         .catch( err => {
             console.log("비밀번호 변경 실패");
             console.log(err);
+            res.json({ resultCode : resCode.Failed,
+                       message: resCode.UpdateError });
         })
     }
     else {
         console.log("토큰이 없거나 만료되었습니다.");
+        res.json({ resultCode : resCode.VerifyFailedCode,
+                   message: resCode.VerifyFailError });
     }
 })
 
