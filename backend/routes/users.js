@@ -47,7 +47,7 @@ router.post('/signin', function(req, res, next) {
             id : userprofile.dataValues.id
         }, secretObj.secret ,
         {
-            expiresIn: '10s'
+            expiresIn: '10m'
         })
         var id = userprofile.dataValues.id;
         console.log(jwttoken);
